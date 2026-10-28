@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hashburst.org/schemas/hb-control-intent-v1.schema.json",
+  "title": "HashBurst Control Intent v1",
+  "type": "object",
+  "required": ["schema","intent_id","controller_id","node_id","issued_at","expires_at","scope","action","parameters","production_apply"],
+  "properties": {
+    "schema": {"const": "hb-control-intent-v1"},
+    "intent_id": {"type": "string", "minLength": 1},
+    "controller_id": {"type": "string", "minLength": 1},
+    "node_id": {"type": "string", "minLength": 1},
+    "issued_at": {"type": "integer", "minimum": 0},
+    "expires_at": {"type": "integer", "minimum": 0},
+    "scope": {"type": "string", "minLength": 1},
+    "action": {"type": "string", "minLength": 1},
+    "parameters": {"type": "object"},
+    "production_apply": {"type": "boolean"}
+  }
+}
