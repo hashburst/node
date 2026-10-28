@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hashburst.org/schemas/hb-control-result-v1.schema.json",
+  "title": "HashBurst Control Result v1",
+  "type": "object",
+  "required": ["schema","intent_id","intent_sha256","controller_id","node_id","processed_at","result","reason","scope","action","production_apply","network_calls","miner_configuration_modified","history_or_policy_modified","observation"],
+  "properties": {
+    "schema": {"const": "hb-control-result-v1"},
+    "intent_id": {"type": "string", "minLength": 1},
+    "intent_sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+    "controller_id": {"type": "string", "minLength": 1},
+    "node_id": {"type": "string", "minLength": 1},
+    "processed_at": {"type": "integer", "minimum": 0},
+    "result": {"enum": ["ACK","NACK"]},
+    "reason": {"type": "string", "minLength": 1},
+    "scope": {"type": "string", "minLength": 1},
+    "action": {"type": "string", "minLength": 1},
+    "production_apply": {"type": "boolean"},
+    "network_calls": {"type": "integer", "minimum": 0},
+    "miner_configuration_modified": {"type": "boolean"},
+    "history_or_policy_modified": {"type": "boolean"},
+    "observation": {"type": ["object","null"]}
+  }
+}
