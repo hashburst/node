@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hashburst.org/schemas/hb-node-control-envelope-v1.schema.json",
+  "title": "HashBurst Node Control Envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["algorithm","format","key_id","kind","payload","signature"],
+  "properties": {
+    "algorithm": {"const": "Ed25519"},
+    "format": {"const": "hb-node-control-envelope-v1"},
+    "key_id": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["intent","result"]},
+    "payload": {"type": "object"},
+    "signature": {"type": "string", "minLength": 1}
+  }
+}
