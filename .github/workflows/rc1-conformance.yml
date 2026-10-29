@@ -44,3 +44,25 @@ jobs:
           git checkout fdfab9d0a74e5e3324cc9f8411fcb64dab0dfcf1
           test "$(sha256sum accelerator.py | awk '{print $1}')" = "5bcff576a5ebb0b63d6d21eacfe07fba0d19a6040d2ebacc234fa59ff933549b"
           PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Release metadata and SBOM syntax
+        run: |
+          python -m json.tool release/manifest-v0.1.0-rc1.json >/dev/null
+          python -m json.tool release/sbom-v0.1.0-rc1.cdx.json >/dev/null
+          grep -q '"production_apply": false' release/manifest-v0.1.0-rc1.json
+          grep -q '"mainnet": false' release/manifest-v0.1.0-rc1.json
+      - name: Install and rollback state-boundary sandbox
+        run: |
+          ROOT=/tmp/hashburst-rc1
+          STATE=/tmp/hashburst-state
+          mkdir -p "$ROOT/releases/previous" "$STATE/control"
+          printf 'identity-sentinel' > "$STATE/identity.sentinel"
+          printf 'anti-replay-sentinel' > "$STATE/control/anti-replay.sqlite"
+          ln -s "$ROOT/releases/previous" "$ROOT/current"
+          sudo env HB_NODE_STATE="$STATE" sh packaging/install-rc1.sh "$ROOT"
+          test "$(cat "$STATE/identity.sentinel")" = "identity-sentinel"
+          test "$(cat "$STATE/control/anti-replay.sqlite")" = "anti-replay-sentinel"
+          test ! -e "$ROOT/current/experimental/stageb"
+          sudo env HB_NODE_STATE="$STATE" sh packaging/rollback-rc1.sh "$ROOT"
+          test "$(readlink "$ROOT/current")" = "$ROOT/releases/previous"
+          test "$(cat "$STATE/identity.sentinel")" = "identity-sentinel"
+          test "$(cat "$STATE/control/anti-replay.sqlite")" = "anti-replay-sentinel"
