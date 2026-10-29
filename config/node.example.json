@@ -1,0 +1,11 @@
+{
+  "schema": "hb-node-config-v1",
+  "identity": {
+    "state_path": "/var/lib/hashburst/node/identity",
+    "ownership": "external-persistent-state",
+    "auto_initialize": false,
+    "auto_migrate": false
+  },
+  "modules": {"tep": false, "bi3339m_mining": false, "ai_compute": false, "storage": false},
+  "control_plane": {"signed_intents": false, "production_apply": false}
+}
