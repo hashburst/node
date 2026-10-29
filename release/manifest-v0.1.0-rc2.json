@@ -1,0 +1,32 @@
+{
+  "schema": "hashburst-release-manifest-v1",
+  "release": "v0.1.0-rc2",
+  "channel": "release-candidate",
+  "base_tag": "v0.1.0-rc1",
+  "mainnet": false,
+  "production_apply": false,
+  "scope": "controlled-exploration-one-worker",
+  "protocol": "HashBurst Node API and Protocol Contract v1.0.0",
+  "features": {
+    "signed_controlled_exploration": true,
+    "persistent_anti_replay_required": true,
+    "watchdog_required": true,
+    "rollback_required": true,
+    "baseline_restore_required": true,
+    "permanent_apply": false
+  },
+  "schemas": [
+    "hb-mining-exploration-proposal-v1",
+    "hb-mining-exploration-intent-v1",
+    "hb-mining-exploration-receipt-v1",
+    "hb-rainbowminer-binding-v1"
+  ],
+  "security_invariants": {
+    "arbitrary_shell": false,
+    "controller_supplied_executable_paths": false,
+    "controller_supplied_arbitrary_urls": false,
+    "node_private_key_remains_local": true,
+    "controller_private_key_remains_local": true,
+    "one_worker_canary": true
+  }
+}
