@@ -24,10 +24,14 @@ jobs:
           test "$(python -c 'import cryptography; print(cryptography.__version__)')" = "50.0.2"
           PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -p 'test_*.py' -v
       - name: Node dev1-dev4
-        env: {PYTHONDONTWRITEBYTECODE: '1'}
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONPATH: ${{ github.workspace }}/src
         run: python -m unittest discover -s tests/source -p 'test_dev*.py' -v
       - name: Stage B regression only
-        env: {PYTHONDONTWRITEBYTECODE: '1'}
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONPATH: ${{ github.workspace }}/src
         run: |
           cp experimental/stageb/hashburst_node/exploration.py src/hashburst_node/exploration.py
           cp experimental/stageb/hashburst_node/exploration_journal.py src/hashburst_node/exploration_journal.py
