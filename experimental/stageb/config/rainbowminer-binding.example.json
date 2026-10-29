@@ -1,0 +1,22 @@
+{
+  "schema": "hb-rainbowminer-binding-v1",
+  "binding_id": "REPLACE-WITH-LOCAL-UUID",
+  "node_id": "REPLACE-WITH-NODE-ID",
+  "worker_id": "REPLACE-WITH-NORMALIZED-WORKER-ID",
+  "hardware": "f4be149970f6ebec70cc11920384c36cc98b89d94ca20693e9bd39508080ac0b",
+  "adapter": "rainbowminer-command-v1",
+  "target": "RainbowMiner-local-control",
+  "current_profile": "CURRENT-PROFILE-HASH",
+  "allowed_profiles": {
+    "CURRENT-PROFILE-HASH": {
+      "argv": ["C:/ABSOLUTE/PINNED/EXECUTABLE.exe", "FIXED", "ARGS"],
+      "executable_sha256": "REPLACE",
+      "timeout_seconds": 60
+    },
+    "CANDIDATE-PROFILE-HASH": {
+      "argv": ["C:/ABSOLUTE/PINNED/EXECUTABLE.exe", "FIXED", "ARGS"],
+      "executable_sha256": "REPLACE",
+      "timeout_seconds": 60
+    }
+  }
+}
