@@ -30,44 +30,44 @@ class RC2Adversarial(unittest.TestCase):
   finally: time.time=old
  def telem(self,**kw):
   x={'temperature_c':60,'healthy':True,'sampled_at':self.clock.time()}; x.update(kw); return x
- def run(self,reader=None,restore_fn=None,pe=None,ie=None):
+ def execute_case(self,reader=None,restore_fn=None,pe=None,ie=None):
   return execute('node',self.nk,self.nk.public_key(),'controller',self.ck.public_key(),pe or self.pe,ie or self.ie,self.bind,self.root/'runtime',self.root/'anti-replay.sqlite',reader or (lambda w:self.telem()),sleep=self.clock.sleep,clock=self.clock.time,monotonic=self.clock.monotonic,restore_fn=restore_fn)
 
  def test_success_restores_exact_baseline_and_never_apply(self):
-  out=self.run(); p=out['payload']; self.assertEqual(p['outcome'],'completed_restored'); self.assertTrue(p['baseline_restored']); self.assertFalse(p['production_apply']); self.assertEqual(self.cfg.read_bytes(),self.original)
+  out=self.execute_case(); p=out['payload']; self.assertEqual(p['outcome'],'completed_restored'); self.assertTrue(p['baseline_restored']); self.assertFalse(p['production_apply']); self.assertEqual(self.cfg.read_bytes(),self.original)
  def test_replay_rejected_before_mutation(self):
-  first=self.run(); self.assertTrue(first['payload']['baseline_restored'])
+  first=self.execute_case(); self.assertTrue(first['payload']['baseline_restored'])
   self.cfg.write_bytes(self.original)
   second=execute('node',self.nk,self.nk.public_key(),'controller',self.ck.public_key(),self.pe,self.ie,self.bind,self.root/'runtime2',self.root/'anti-replay.sqlite',lambda w:self.telem(),sleep=self.clock.sleep,clock=self.clock.time,monotonic=self.clock.monotonic)
   self.assertEqual(second['payload']['error'],'replay_detected'); self.assertFalse(second['payload']['baseline_restored']); self.assertEqual(self.cfg.read_bytes(),self.original)
  def test_tampered_proposal_signature_rejected(self):
   pe=copy.deepcopy(self.pe); pe['payload']['candidate_action']['to_profile']['profile']='A'
-  out=self.run(pe=pe); self.assertIn('invalid Ed25519',out['payload']['error']); self.assertEqual(self.cfg.read_bytes(),self.original)
+  out=self.execute_case(pe=pe); self.assertIn('invalid Ed25519',out['payload']['error']); self.assertEqual(self.cfg.read_bytes(),self.original)
  def test_tampered_intent_signature_rejected(self):
   ie=copy.deepcopy(self.ie); ie['payload']['production_apply']=True
-  out=self.run(ie=ie); self.assertIn('invalid Ed25519',out['payload']['error']); self.assertEqual(self.cfg.read_bytes(),self.original)
+  out=self.execute_case(ie=ie); self.assertIn('invalid Ed25519',out['payload']['error']); self.assertEqual(self.cfg.read_bytes(),self.original)
  def test_resigned_production_apply_is_denied(self):
   body=copy.deepcopy(self.ie['payload']); body['production_apply']=True
   ie=sign_envelope('mining-exploration-intent',INTENT_SCHEMA,'controller',self.ck,body)
-  out=self.run(ie=ie); self.assertEqual(out['payload']['error'],'production_apply_denied'); self.assertEqual(self.cfg.read_bytes(),self.original)
+  out=self.execute_case(ie=ie); self.assertEqual(out['payload']['error'],'production_apply_denied'); self.assertEqual(self.cfg.read_bytes(),self.original)
  def test_binding_changed_is_denied_before_mutation(self):
-  self.binding['worker_id']='evil'; self.write_binding(); out=self.run(); self.assertEqual(out['payload']['error'],'local_binding_changed'); self.assertEqual(self.cfg.read_bytes(),self.original)
+  self.binding['worker_id']='evil'; self.write_binding(); out=self.execute_case(); self.assertEqual(out['payload']['error'],'local_binding_changed'); self.assertEqual(self.cfg.read_bytes(),self.original)
  def test_thermal_trip_rolls_back(self):
-  out=self.run(lambda w:self.telem(temperature_c=76)); self.assertEqual(out['payload']['watchdog_trip'],'thermal'); self.assertEqual(out['payload']['outcome'],'aborted_restored'); self.assertEqual(self.cfg.read_bytes(),self.original)
+  out=self.execute_case(lambda w:self.telem(temperature_c=76)); self.assertEqual(out['payload']['watchdog_trip'],'thermal'); self.assertEqual(out['payload']['outcome'],'aborted_restored'); self.assertEqual(self.cfg.read_bytes(),self.original)
  def test_health_trip_rolls_back(self):
-  out=self.run(lambda w:self.telem(healthy=False)); self.assertEqual(out['payload']['watchdog_trip'],'health'); self.assertTrue(out['payload']['baseline_restored']); self.assertEqual(self.cfg.read_bytes(),self.original)
+  out=self.execute_case(lambda w:self.telem(healthy=False)); self.assertEqual(out['payload']['watchdog_trip'],'health'); self.assertTrue(out['payload']['baseline_restored']); self.assertEqual(self.cfg.read_bytes(),self.original)
  def test_staleness_trip_rolls_back(self):
-  out=self.run(lambda w:self.telem(sampled_at=self.clock.time()-6)); self.assertEqual(out['payload']['watchdog_trip'],'staleness'); self.assertTrue(out['payload']['baseline_restored']); self.assertEqual(self.cfg.read_bytes(),self.original)
+  out=self.execute_case(lambda w:self.telem(sampled_at=self.clock.time()-6)); self.assertEqual(out['payload']['watchdog_trip'],'staleness'); self.assertTrue(out['payload']['baseline_restored']); self.assertEqual(self.cfg.read_bytes(),self.original)
  def test_deadline_trip_rolls_back(self):
   self.make(duration=1,min_samples=3)
   def reader(w): self.clock.sleep(0.6); return self.telem()
-  out=self.run(reader); self.assertEqual(out['payload']['watchdog_trip'],'deadline'); self.assertTrue(out['payload']['baseline_restored']); self.assertEqual(self.cfg.read_bytes(),self.original)
+  out=self.execute_case(reader); self.assertEqual(out['payload']['watchdog_trip'],'deadline'); self.assertTrue(out['payload']['baseline_restored']); self.assertEqual(self.cfg.read_bytes(),self.original)
  def test_crash_in_telemetry_rolls_back(self):
   def crash(w): raise RuntimeError('telemetry_crash')
-  out=self.run(crash); self.assertEqual(out['payload']['outcome'],'aborted_restored'); self.assertIn('telemetry_crash',out['payload']['error']); self.assertEqual(self.cfg.read_bytes(),self.original)
+  out=self.execute_case(crash); self.assertEqual(out['payload']['outcome'],'aborted_restored'); self.assertIn('telemetry_crash',out['payload']['error']); self.assertEqual(self.cfg.read_bytes(),self.original)
  def test_rollback_failure_is_explicit_and_never_claims_restored(self):
   def fail(b,p): raise RollbackError('forced_rollback_failure')
-  out=self.run(lambda w:self.telem(temperature_c=90),restore_fn=fail); self.assertEqual(out['payload']['outcome'],'rollback_failed'); self.assertFalse(out['payload']['baseline_restored']); self.assertIn('forced_rollback_failure',out['payload']['error']); self.assertNotEqual(self.cfg.read_bytes(),self.original)
+  out=self.execute_case(lambda w:self.telem(temperature_c=90),restore_fn=fail); self.assertEqual(out['payload']['outcome'],'rollback_failed'); self.assertFalse(out['payload']['baseline_restored']); self.assertIn('forced_rollback_failure',out['payload']['error']); self.assertNotEqual(self.cfg.read_bytes(),self.original)
  def test_local_watchdog_caps_cannot_be_relaxed(self):
   old=time.time
   try:
