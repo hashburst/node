@@ -10,28 +10,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Static RC1 invariants
+        run: python tools/rc1_gate.py
+      - name: Enrollment exact artifact, internal hashes, dependency and 67 tests
+        run: |
+          test "$(sha256sum vendor/enrollment/HashBurst-Enrollment-0.2.0-dev3.zip | awk '{print $1}')" = "9c6ba3434f5a14dee2bb7bdd8e1b6e87f44418a47e03a0437feda147521ccd73"
+          mkdir /tmp/enrollment && unzip -q vendor/enrollment/HashBurst-Enrollment-0.2.0-dev3.zip -d /tmp/enrollment
+          cd /tmp/enrollment
+          sha256sum -c SHA256SUMS
+          python -m pip install -r requirements.txt
+          test "$(python -c 'import cryptography; print(cryptography.__version__)')" = "50.0.2"
+          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -p 'test_*.py' -v
       - name: Node dev1-dev4
-        env:
-          PYTHONDONTWRITEBYTECODE: '1'
+        env: {PYTHONDONTWRITEBYTECODE: '1'}
         run: python -m unittest discover -s tests/source -p 'test_dev*.py' -v
-      - name: Stage B regression
-        env:
-          PYTHONDONTWRITEBYTECODE: '1'
+      - name: Stage B regression only
+        env: {PYTHONDONTWRITEBYTECODE: '1'}
         run: |
           cp experimental/stageb/hashburst_node/exploration.py src/hashburst_node/exploration.py
           cp experimental/stageb/hashburst_node/exploration_journal.py src/hashburst_node/exploration_journal.py
           cp experimental/stageb/tests/test_stageb.py tests/source/test_stageb.py
           python -m unittest discover -s tests/source -p 'test_*.py' -v
-      - name: Accelerator 0.1.3 exact commit
+      - name: Accelerator 0.1.3 exact commit and tests
         run: |
           git clone https://github.com/hashburst/mining-accelerator.git /tmp/mining-accelerator
           cd /tmp/mining-accelerator
           git checkout fdfab9d0a74e5e3324cc9f8411fcb64dab0dfcf1
-          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -p 'test_*.py' -v
           test "$(sha256sum accelerator.py | awk '{print $1}')" = "5bcff576a5ebb0b63d6d21eacfe07fba0d19a6040d2ebacc234fa59ff933549b"
-      - name: Enrollment exact-source gate
-        run: python tools/rc1_gate.py
+          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -p 'test_*.py' -v
