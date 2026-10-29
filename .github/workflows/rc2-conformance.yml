@@ -53,6 +53,8 @@ jobs:
           python -m json.tool release/manifest-v0.1.0-rc1.json >/dev/null
           python -m json.tool release/manifest-v0.1.0-rc2.json >/dev/null
           python -m json.tool release/sbom-v0.1.0-rc1.cdx.json >/dev/null
+          python -m json.tool release/sbom-v0.1.0-rc2.cdx.json >/dev/null
+          grep -q '"hashburst.production_apply", "value": "false"' release/sbom-v0.1.0-rc2.cdx.json || grep -q '"name": "hashburst.production_apply"' release/sbom-v0.1.0-rc2.cdx.json
           python tools/rc2_gate.py
       - name: RC2 install upgrade rollback persistent-state sandbox
         run: |
