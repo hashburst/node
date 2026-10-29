@@ -1,0 +1,10 @@
+{
+  "artifact": "HashBurst-Node-0.1.0-dev4-stageB",
+  "derived_from_zip": "HashBurst-Node-0.1.0-dev4(1).zip",
+  "derived_from_zip_sha256": "214b7ea34ee88b38934c374eee52d4f8480cd77854bb5d0f75a0aac1872cbce8",
+  "exploration_real_transition_capable": true,
+  "exploration_requires_local_binding": true,
+  "production_permanent_apply_enabled": false,
+  "schema": "hb-stageb-build-v1",
+  "stage_a_internal_manifest_verified": true
+}
