@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hashburst.org/schemas/node-capabilities-v1.json",
+  "title": "HashBurst Node Capabilities v1",
+  "type": "object",
+  "required": ["schema", "node_id", "platform", "capabilities"],
+  "properties": {
+    "schema": {"const": "hashburst-node-capabilities-v1"},
+    "node_id": {"type": "string", "minLength": 1},
+    "platform": {"enum": ["vps-linux", "raspberry-arm", "desktop-linux", "windows", "macos", "rig", "hpc"]},
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "hvm": {"type": "boolean"},
+        "validator": {"type": "boolean"},
+        "tep": {"type": "boolean"},
+        "mining": {"type": "boolean"},
+        "ai": {"type": "boolean"},
+        "mining_segmentation": {"type": "boolean"},
+        "storage": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}
