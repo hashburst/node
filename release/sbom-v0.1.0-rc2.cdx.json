@@ -1,0 +1,111 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:61cd1ce3-50cc-431f-9231-e269dfb18482",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "name": "HashBurst Node",
+      "version": "0.1.0-rc2"
+    },
+    "properties": [
+      {
+        "name": "hashburst.base_tag",
+        "value": "v0.1.0-rc1"
+      },
+      {
+        "name": "hashburst.production_apply",
+        "value": "false"
+      },
+      {
+        "name": "hashburst.mainnet",
+        "value": "false"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "application",
+      "name": "hashburst-node-core",
+      "version": "0.1.0-rc2",
+      "properties": [
+        {
+          "name": "git.preliminary_conformance_commit",
+          "value": "61cd1ce350cc031f5231e269dfb18482db4195ee"
+        },
+        {
+          "name": "hashburst.scope",
+          "value": "controlled-exploration-one-worker"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "HashBurst-Enrollment",
+      "version": "0.2.0-dev3",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "9c6ba3434f5a14dee2bb7bdd8e1b6e87f44418a47e03a0437feda147521ccd73"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "cryptography",
+      "version": "50.0.2",
+      "purl": "pkg:pypi/cryptography@50.0.2"
+    },
+    {
+      "type": "application",
+      "name": "HashBurst-Mining-Accelerator",
+      "version": "0.1.3",
+      "properties": [
+        {
+          "name": "git.commit",
+          "value": "fdfab9d0a74e5e3324cc9f8411fcb64dab0dfcf1"
+        },
+        {
+          "name": "hashburst.mode",
+          "value": "shadow"
+        },
+        {
+          "name": "hashburst.apply_supported",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "application",
+      "name": "hashburst-controlled-exploration",
+      "version": "0.1.0-rc2",
+      "properties": [
+        {
+          "name": "schema.proposal",
+          "value": "hb-mining-exploration-proposal-v1"
+        },
+        {
+          "name": "schema.intent",
+          "value": "hb-mining-exploration-intent-v1"
+        },
+        {
+          "name": "schema.receipt",
+          "value": "hb-mining-exploration-receipt-v1"
+        },
+        {
+          "name": "hashburst.production_apply",
+          "value": "false"
+        },
+        {
+          "name": "hashburst.watchdog_required",
+          "value": "true"
+        },
+        {
+          "name": "hashburst.rollback_required",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}
