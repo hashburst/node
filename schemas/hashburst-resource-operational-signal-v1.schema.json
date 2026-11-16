@@ -1,0 +1,60 @@
+{
+  "$id": "https://hashburst.org/schemas/hashburst-resource-operational-signal-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "elastic_workload": {
+      "enum": [
+        "ALLOW",
+        "THROTTLE"
+      ]
+    },
+    "expires_at": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "node_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "observed_at": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "provenance": {
+      "const": "hashburst-node-resource-readiness-v1"
+    },
+    "readiness": {
+      "enum": [
+        "READY",
+        "DEGRADED"
+      ]
+    },
+    "routing": {
+      "enum": [
+        "PREFERRED",
+        "AVOID_IF_POSSIBLE"
+      ]
+    },
+    "schema": {
+      "const": "hashburst-resource-operational-signal-v1"
+    },
+    "signal_id": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema",
+    "signal_id",
+    "node_id",
+    "observed_at",
+    "expires_at",
+    "readiness",
+    "elastic_workload",
+    "routing",
+    "provenance"
+  ],
+  "title": "HashBurst Resource Operational Signal v1",
+  "type": "object"
+}
